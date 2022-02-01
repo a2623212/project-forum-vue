@@ -2,12 +2,18 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import NotFound from '../views/NotFound.vue'
 import SignIn from '../views/SignIn.vue'
+import Restaurants from '../views/Restaurants.vue'
 
 
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/',
+    name: 'root',
+    redirect: '/restaurants',
+  },
   {
     path: '/signin',
     name: 'Sign-in',
@@ -17,6 +23,26 @@ const routes = [
     path: '/signup',
     name: 'Sign-up',
     component: () => import('../views/SignUp.vue'),
+  },
+  {
+    path: '/restaurants',
+    name: 'restaurants',
+    component: Restaurants,
+  },
+  {
+    path: '/restaurants/feed',
+    name: 'restaurants-feed',
+    component: () => import('../views/RestaurantsFeed.vue'),
+  },
+  {
+    path: '/restaurants/top',
+    name: 'restaurants-top',
+    component: () => import('../views/RestaurantsTop.vue'),
+  },
+  {
+    path: '/users/top',
+    name: 'users-top',
+    component: () => import('../views/UsersTop.vue'),
   },
   {
     path: '*',
