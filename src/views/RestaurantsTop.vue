@@ -11,7 +11,7 @@
 import NavTabs from './../components/NavTabs'
 export default {
   components: {
-    NavTabs
+    NavTabs,
   }
 }
 </script>
