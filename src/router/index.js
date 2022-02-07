@@ -30,7 +30,7 @@ const routes = [
     component: Restaurants,
   },
   {
-    path: '/restaurants/feed',
+    path: '/restaurants/feeds',
     name: 'restaurants-feed',
     component: () => import('../views/RestaurantsFeed.vue'),
   },
@@ -52,6 +52,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
+  linkExactActiveClass: 'active',
   routes
 })
 
