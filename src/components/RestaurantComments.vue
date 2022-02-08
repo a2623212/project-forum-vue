@@ -8,6 +8,7 @@
           type="button"
           class="btn btn-danger float-right"
           v-if="currentUser.isAdmin"
+          @click.stop.prevent="handleDeleteButtonClick(comment.id)"
         >
           Delete
         </button>
@@ -50,5 +51,12 @@ export default {
     };
   },
   mixins: [fromNowFilter],
+  methods: {
+    handleDeleteButtonClick(commentId) {
+      console.log("handleDeleteButtonClick", commentId);
+      // TODO 透過API通知server刪掉資料
+      this.$emit("after-delete-comment", commentId);
+    },
+  },
 };
 </script>

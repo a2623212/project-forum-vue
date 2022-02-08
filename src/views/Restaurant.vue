@@ -5,7 +5,10 @@
     <RestaurantDetail :initial-restaurant="restaurant" />
     <hr />
     <!-- 餐廳評論 RestaurantComments -->
-    <RestaurantComments :restaurant-comments="restaurantComments" />
+    <RestaurantComments
+      :restaurant-comments="restaurantComments"
+      @after-delete-comment="afterDeleteComments"
+    />
     <!-- 新增評論 CreateComment -->
   </div>
 </template>
@@ -145,6 +148,11 @@ export default {
       };
 
       this.restaurantComments = dummyData.restaurant.Comments;
+    },
+    afterDeleteComments(commentId) {
+      this.restaurantComments = this.restaurantComments.filter(
+        (comment) => comment.id !== commentId
+      );
     },
   },
 };
