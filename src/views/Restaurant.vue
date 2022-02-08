@@ -10,12 +10,17 @@
       @after-delete-comment="afterDeleteComments"
     />
     <!-- 新增評論 CreateComment -->
+    <CreateComment
+      :restaurant-id="restaurant.id"
+      @after-create-comment="afterCreateComment"
+    />
   </div>
 </template>
 
 <script>
 import RestaurantDetail from "./../components/RestaurantDetail";
 import RestaurantComments from "./../components/RestaurantComments";
+import CreateComment from "./../components/CreateComment";
 
 const dummyData = {
   restaurant: {
@@ -103,11 +108,22 @@ const dummyData = {
   isLiked: false,
 };
 
+const dummyUser = {
+  currentUser: {
+    id: 1,
+    name: "root",
+    email: "root@example.com",
+    image: null,
+    isAdmin: true,
+  },
+};
+
 export default {
   name: "Restaurant",
   components: {
     RestaurantDetail,
     RestaurantComments,
+    CreateComment,
   },
   data() {
     return {
@@ -124,6 +140,7 @@ export default {
         isLiked: false,
       },
       restaurantComments: [],
+      currentUser: dummyUser.currentUser,
     };
   },
   created() {
@@ -153,6 +170,19 @@ export default {
       this.restaurantComments = this.restaurantComments.filter(
         (comment) => comment.id !== commentId
       );
+    },
+    afterCreateComment(payload) {
+      const { commentId, restaurantId, text } = payload;
+      this.restaurantComments.push({
+        id: commentId,
+        RestaurantId: restaurantId,
+        User: {
+          id: this.currentUser.id,
+          name: this.currentUser.name,
+        },
+        text,
+        createdAt: new Date(),
+      });
     },
   },
 };
