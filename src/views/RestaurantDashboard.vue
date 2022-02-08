@@ -1,26 +1,26 @@
 <template>
   <div class="container py-5">
-    <!-- 餐廳資訊頁 RestaurantDetail -->
-    <RestaurantDetail :initial-restaurant="restaurant" />
+    <div>
+      <h1>{{ restaurant.name }}</h1>
+      <span class="badge badge-secondary mt-1 mb-3">
+        {{ restaurant.categoryName }}
+      </span>
+    </div>
+
     <hr />
-    <!-- 餐廳評論 RestaurantComments -->
-    <RestaurantComments
-      :restaurant-comments="restaurantComments"
-      @after-delete-comment="afterDeleteComments"
-    />
-    <!-- 新增評論 CreateComment -->
-    <CreateComment
-      :restaurant-id="restaurant.id"
-      @after-create-comment="afterCreateComment"
-    />
+
+    <ul>
+      <li>評論數： {{ restaurant.commentsLength }}</li>
+      <li>瀏覽次數： {{ restaurant.viewCounts }}</li>
+    </ul>
+
+    <button type="button" class="btn btn-link" @click="$router.back()">
+      回上一頁
+    </button>
   </div>
 </template>
 
 <script>
-import RestaurantDetail from "./../components/RestaurantDetail";
-import RestaurantComments from "./../components/RestaurantComments";
-import CreateComment from "./../components/CreateComment";
-
 const dummyData = {
   restaurant: {
     id: 1,
@@ -33,7 +33,7 @@ const dummyData = {
       "https://loremflickr.com/320/240/restaurant,food/?random=33.779635623332574",
     viewCounts: 1,
     createdAt: "2022-01-24T10:33:10.000Z",
-    updatedAt: "2022-02-07T15:36:45.973Z",
+    updatedAt: "2022-02-07T15:36:45.000Z",
     CategoryId: 4,
     Category: {
       id: 4,
@@ -41,8 +41,6 @@ const dummyData = {
       createdAt: "2022-01-24T10:33:10.000Z",
       updatedAt: "2022-01-24T10:33:10.000Z",
     },
-    FavoritedUsers: [],
-    LikedUsers: [],
     Comments: [
       {
         id: 1,
@@ -103,85 +101,32 @@ const dummyData = {
       },
     ],
   },
-  isFavorited: false,
-  isLiked: false,
 };
-
-const dummyUser = {
-  currentUser: {
-    id: 1,
-    name: "root",
-    email: "root@example.com",
-    image: null,
-    isAdmin: true,
-  },
-};
-
 export default {
-  name: "Restaurant",
-  components: {
-    RestaurantDetail,
-    RestaurantComments,
-    CreateComment,
-  },
   data() {
     return {
       restaurant: {
         id: -1,
         name: "",
         categoryName: "",
-        image: "",
-        openingHours: "",
-        tel: "",
-        address: "",
-        description: "",
-        isFavorited: false,
-        isLiked: false,
+        viewCounts: 0,
+        commentsLength: 0,
       },
-      restaurantComments: [],
-      currentUser: dummyUser.currentUser,
     };
   },
-  created() {
-    const { id: restaurantId } = this.$route.params;
-    this.fetchRestaurant(restaurantId);
-  },
   methods: {
-    fetchRestaurant(restaurantId) {
-      console.log("restaurantId", restaurantId);
+    fetchRestaurant() {
       this.restaurant = {
         id: dummyData.restaurant.id,
         name: dummyData.restaurant.name,
         categoryName: dummyData.restaurant.Category.name,
-        image: dummyData.restaurant.image,
-        openingHours: dummyData.restaurant.opening_hours,
-        tel: dummyData.restaurant.tel,
-        address: dummyData.restaurant.address,
-        description: dummyData.restaurant.description,
-        isFavorited: dummyData.isFavorited,
-        isLiked: dummyData.isLiked,
+        viewCounts: dummyData.restaurant.viewCounts,
+        commentsLength: dummyData.restaurant.Comments.length,
       };
-
-      this.restaurantComments = dummyData.restaurant.Comments;
     },
-    afterDeleteComments(commentId) {
-      this.restaurantComments = this.restaurantComments.filter(
-        (comment) => comment.id !== commentId
-      );
-    },
-    afterCreateComment(payload) {
-      const { commentId, restaurantId, text } = payload;
-      this.restaurantComments.push({
-        id: commentId,
-        RestaurantId: restaurantId,
-        User: {
-          id: this.currentUser.id,
-          name: this.currentUser.name,
-        },
-        text,
-        createdAt: new Date(),
-      });
-    },
+  },
+  created() {
+    this.fetchRestaurant();
   },
 };
 </script>
