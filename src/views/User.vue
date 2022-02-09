@@ -20,7 +20,9 @@
         <UserCommentsCard :comments="user.Comments" />
 
         <!-- UserFavoritedRestaurantsCard -->
-        <UserFavoritedRestaurantsCard />
+        <UserFavoritedRestaurantsCard
+          :favoritedRestaurants="user.FavoritedRestaurants"
+        />
       </div>
     </div>
   </div>
@@ -58,8 +60,7 @@ const dummyData = {
           address: "138 Quinn Street",
           opening_hours: "08:00",
           description: "quos dolore tenetur",
-          image:
-            "https://loremflickr.com/320/240/restaurant,food/?random=43.25768589113377",
+          image: null,
           viewCounts: null,
           createdAt: "2019-07-30T16:24:55.434Z",
           updatedAt: "2019-07-30T16:24:55.434Z",

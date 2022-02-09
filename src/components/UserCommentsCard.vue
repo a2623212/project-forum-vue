@@ -21,18 +21,15 @@
 </template>
 
 <script>
+import { emptyImageFilter } from "./../utils/mixins";
 export default {
   name: "userCommentsCard",
+  mixins: [emptyImageFilter],
   props: {
     comments: {
       type: Array,
       required: true,
     },
-  },
-  data() {
-    return {
-      emptyImage: "http://fakeimg.pl/300/282828/EAE0D0/?text=empty",
-    };
   },
 };
 </script>
