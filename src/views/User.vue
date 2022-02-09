@@ -13,7 +13,7 @@
         <UserFollowingsCard :followings="user.Followings" />
 
         <!-- UserFollowersCard -->
-        <UserFollowersCard />
+        <UserFollowersCard :followers="user.Followers" />
       </div>
       <div class="col-md-8">
         <!-- UserCommentsCard -->
