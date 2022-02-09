@@ -10,7 +10,7 @@
     <div class="row">
       <div class="col-md-4">
         <!-- UserFollowingsCard -->
-        <UserFollowingsCard />
+        <UserFollowingsCard :followings="user.Followings" />
 
         <!-- UserFollowersCard -->
         <UserFollowersCard />
