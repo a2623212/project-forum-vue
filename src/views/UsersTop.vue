@@ -16,50 +16,8 @@
 <script>
 import NavTabs from "./../components/NavTabs";
 import UsersProfilingCard from "./../components/UsersProfilingCard";
-
-const dummyData = {
-  users: [
-    {
-      id: 1,
-      name: "root",
-      email: "root@example.com",
-      password: "$2a$10$OEpYPwy1SULoNCUJ9FAiXOzZhpCkXliy.4dUCZXLBsFPSlrWTIRT2",
-      isAdmin: true,
-      image: "http://fakeimg.pl/300/282828/EAE0D0/?text=WOW",
-      createdAt: "2022-01-24T10:33:09.000Z",
-      updatedAt: "2022-01-24T10:33:09.000Z",
-      Followers: [],
-      FollowerCount: 0,
-      isFollowed: false,
-    },
-    {
-      id: 2,
-      name: "user1",
-      email: "user1@example.com",
-      password: "$2a$10$kC7d3SpwVWNisG25ZhSJ1.wLBlW5kexc9q3Ryh4ak0rT1xAd8Omw6",
-      isAdmin: false,
-      image: "http://fakeimg.pl/300/282828/EAE0D0/?text=YEAH",
-      createdAt: "2022-01-24T10:33:09.000Z",
-      updatedAt: "2022-01-24T10:33:09.000Z",
-      Followers: [],
-      FollowerCount: 0,
-      isFollowed: false,
-    },
-    {
-      id: 3,
-      name: "user2",
-      email: "user2@example.com",
-      password: "$2a$10$qhrZaoxt6F/u55QasF0QWuXV83u8wMRMkywz9UgVNi/t.K9rF/sGC",
-      isAdmin: false,
-      image: "http://fakeimg.pl/300/282828/EAE0D0/?text=HAHA",
-      createdAt: "2022-01-24T10:33:09.000Z",
-      updatedAt: "2022-01-24T10:33:09.000Z",
-      Followers: [],
-      FollowerCount: 0,
-      isFollowed: false,
-    },
-  ],
-};
+import usersAPI from "./../apis/users";
+import { Toast } from "./../utils/helpers";
 
 export default {
   name: "UsersTops",
@@ -76,8 +34,16 @@ export default {
     this.fetchUsers();
   },
   methods: {
-    fetchUsers() {
-      this.users = dummyData.users;
+    async fetchUsers() {
+      try {
+        const { data } = await usersAPI.getTopUsers();
+        this.users = data.users;
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法載入美食達人，請稍後再試",
+        });
+      }
     },
   },
 };
