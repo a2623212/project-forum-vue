@@ -99,7 +99,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary" :disabled="isProcessing">
-      {{ isProcessing ? "處理中．．．" : "送出" }}
+      {{ isProcessing ? "處理中..." : "送出" }}
     </button>
   </form>
 </template>
@@ -150,6 +150,14 @@ export default {
       ...this.restaurant,
       ...this.initialRestaurant,
     };
+  },
+  watch: {
+    initialRestaurant(newValue) {
+      this.restaurant = {
+        ...this.restaurant,
+        ...newValue,
+      };
+    },
   },
   methods: {
     async fetchCategories() {
