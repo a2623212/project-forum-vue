@@ -2,9 +2,7 @@
   <div class="container py-5">
     <form class="w-100" @submit.prevent.stop="handleSubmit">
       <div class="text-center mb-4">
-        <h1 class="h3 mb-3 font-weight-normal">
-          Sign Up
-        </h1>
+        <h1 class="h3 mb-3 font-weight-normal">Sign Up</h1>
       </div>
 
       <div class="form-label-group mb-2">
@@ -19,7 +17,7 @@
           autocomplete="username"
           required
           autofocus
-        >
+        />
       </div>
 
       <div class="form-label-group mb-2">
@@ -33,7 +31,7 @@
           placeholder="email"
           autocomplete="email"
           required
-        >
+        />
       </div>
 
       <div class="form-label-group mb-3">
@@ -47,7 +45,7 @@
           placeholder="Password"
           autocomplete="new-password"
           required
-        >
+        />
       </div>
 
       <div class="form-label-group mb-3">
@@ -61,52 +59,91 @@
           placeholder="Password"
           autocomplete="new-password"
           required
-        >
+        />
       </div>
 
       <button
         class="btn btn-lg btn-primary btn-block mb-3"
         type="submit"
+        :disabled="isProcessing"
       >
         Submit
       </button>
 
       <div class="text-center mb-3">
         <p>
-          <router-link to="/signin">
-            Sign In
-          </router-link>
+          <router-link to="/signin"> Sign In </router-link>
         </p>
       </div>
 
-      <p class="mt-5 mb-3 text-muted text-center">
-        &copy; 2021-2022
-      </p>
+      <p class="mt-5 mb-3 text-muted text-center">&copy; 2021-2022</p>
     </form>
   </div>
 </template>
 
 <script>
+import authorizationAPI from "./../apis/authorization";
+import { Toast } from "./../utils/helpers";
+
 export default {
-  data () {
+  name: "SignUp",
+  data() {
     return {
-      name: '',
-      email: '',
-      password: '',
-      passwordCheck:'',
-    }
+      name: "",
+      email: "",
+      password: "",
+      passwordCheck: "",
+      isProcessing: false,
+    };
   },
   methods: {
-    handleSubmit(){
-      const data = JSON.stringify({
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        passwordCheck: this.passworCheck
-      })
+    async handleSubmit() {
+      try {
+        if (
+          !this.name ||
+          !this.email ||
+          !this.password ||
+          !this.passwordCheck
+        ) {
+          Toast.fire({
+            icon: "warning",
+            title: "請確認已填寫所有欄位",
+          });
+          return;
+        }
+        if (this.password !== this.passwordCheck) {
+          Toast.fire({
+            icon: "warning",
+            title: "兩次輸入的密碼不同",
+          });
+          this.passwordCheck = "";
+          return;
+        }
+        this.isProcessing = true;
+        const { data } = await authorizationAPI.signUp({
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          passwordCheck: this.passwordCheck,
+        });
 
-      console.log('data', data)
-    }
-  }
-}
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        Toast.fire({
+          icon: "success",
+          title: data.message,
+        });
+        // 成功登入後轉址到登入頁
+        this.$router.push("/signin");
+      } catch (error) {
+        this.isProcessing = false;
+        Toast.fire({
+          icon: "error",
+          title: "無法註冊會員，請稍後再試",
+        });
+      }
+    },
+  },
+};
 </script>
