@@ -8,6 +8,21 @@ export default {
         headers: { Authorization: `Bearer ${getToken()}` },
       });
     },
+    create(data) {
+      return apiHelper.post("/admin/categories", data, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+    },
+    delete({ categoryId }) {
+      return apiHelper.delete(`/admin/categories/${categoryId}`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+    },
+    update({ categoryId, data }) {
+      return apiHelper.put(`/admin/categories/${categoryId}`, data, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+    },
   },
   restaurants: {
     getDetail({ restaurantId }) {

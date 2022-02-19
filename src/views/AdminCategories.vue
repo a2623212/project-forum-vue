@@ -89,36 +89,10 @@
 <script>
 import AdminNav from "@/components/AdminNav";
 import { v4 as uuidv4 } from "uuid";
+import adminAPI from "./../apis/admin";
+import { Toast } from "./../utils/helpers";
 
-//  2. 定義暫時使用的資料
-const dummyData = {
-  categories: [
-    {
-      id: 1,
-      name: "中式料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 2,
-      name: "日本料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 3,
-      name: "義大利料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 4,
-      name: "墨西哥料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-  ],
-};
+//  2.透過API向後端伺服器要資料
 
 export default {
   name: "AdminCategories",
@@ -137,15 +111,23 @@ export default {
     this.fetchCategories();
   },
   methods: {
-    // 4. 定義 `fetchCategories` 方法，把 `dummyData` 帶入 Vue 物件
-    fetchCategories() {
-      this.categories = dummyData.categories.map((category) => {
-        return {
-          ...category,
-          isEditing: false,
-          nameCached: "",
-        };
-      });
+    // 4. 定義 `fetchCategories` 方法，把 `API` 帶入 Vue 物件
+    async fetchCategories() {
+      try {
+        const { data } = await adminAPI.categories.get();
+        this.categories = data.categories.map((category) => {
+          return {
+            ...category,
+            isEditing: false,
+            nameCached: "",
+          };
+        });
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取得類別資料，請稍後再試",
+        });
+      }
     },
     createCategory() {
       // TODO: 透過 API 告知伺服器欲新增的餐廳類別...
