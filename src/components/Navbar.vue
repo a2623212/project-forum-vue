@@ -33,6 +33,7 @@
           <button
             type="button"
             class="btn btn-sm btn-outline-success my-2 my-sm-0"
+            @click.stop.prevent="logOut"
           >
             登出
           </button>
@@ -46,8 +47,15 @@
 import { mapState } from "vuex";
 
 export default {
+  name: "Navbar",
   computed: {
     ...mapState(["currentUser", "isAuthenticated"]),
+  },
+  methods: {
+    logOut() {
+      this.$store.commit("revokeAuthentication");
+      this.$router.push("/signin");
+    },
   },
 };
 </script>

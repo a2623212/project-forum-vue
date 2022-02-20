@@ -14,6 +14,7 @@ export default new Vuex.Store({
       isAdmin: false,
     },
     isAuthenticated: false,
+    token: "",
   },
   // use 'commit' to call
   mutations: {
@@ -23,8 +24,17 @@ export default new Vuex.Store({
         // 將 API 取得的 currentUser 覆蓋掉 Vuex state 中的 currentUser
         ...currentUser,
       };
+      // 將使用者驗證用的 token 儲存在 state 中
+      state.token = localStorage.getItem("token");
       // 將使用者的登入狀態改為 true
       state.isAuthenticated = true;
+    },
+    revokeAuthentication(state) {
+      state.currentUser = {};
+      // 登出時一併將 state 內的 token 移除
+      state.token = "";
+      state.isAuthenticated = false;
+      localStorage.removeItem("token");
     },
   },
   // use 'dispatch' to call
@@ -42,9 +52,13 @@ export default new Vuex.Store({
           image,
           isAdmin,
         });
+        return true;
       } catch (error) {
         console.log("error", error);
         console.error("can not fetch user information");
+        //驗證失敗直接強制登出
+        commit("revokeAuthentication");
+        return false;
       }
     },
   },
