@@ -75,3 +75,36 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.page-link {
+  height: 37px;
+  padding: 7px 20px;
+  color: #004369;
+}
+
+.page-item.active .page-link,
+.page-item.active span {
+  color: white;
+  background-color: #004369;
+  border-color: #004369;
+  z-index: 1;
+}
+
+.page-item span {
+  color: #004369;
+}
+
+a.page-link:hover,
+a.page-link:hover span {
+  color: white;
+  background-color: #004369;
+  border-color: #004369;
+}
+</style>
