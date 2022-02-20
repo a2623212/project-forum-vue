@@ -32,11 +32,15 @@
       />
     </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary" :disabled="isProcessing">
+      Submit
+    </button>
   </form>
 </template>
 
 <script>
+import { Toast } from "./../utils/helpers";
+
 export default {
   name: "AdminUserForm",
   props: {
@@ -46,6 +50,10 @@ export default {
         name: "",
         image: "",
       }),
+    },
+    isProcessing: {
+      type: Boolean,
+      default: false,
     },
   },
   created() {
@@ -57,9 +65,10 @@ export default {
   data() {
     return {
       user: {
-        id: -1,
-        name: "",
+        id: 0,
         image: "",
+        name: "",
+        email: "",
       },
     };
   },
@@ -75,9 +84,17 @@ export default {
       }
     },
     handleSubmit(e) {
-      console.log("123");
+      if (!this.user.name) {
+        Toast.fire({
+          icon: "warning",
+          title: "您尚未填寫姓名",
+        });
+        return;
+      }
+
       const form = e.target; // <form></form>
       const formData = new FormData(form);
+
       this.$emit("after-submit", formData);
     },
   },

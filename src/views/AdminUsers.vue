@@ -20,21 +20,14 @@
           <td v-else>user</td>
           <td>
             <button
+              v-if="currentUser.id !== user.id"
               type="button"
               class="btn btn-link"
-              v-if="!user.isAdmin"
-              @click.stop.prevent="toggleUserRole(user.id)"
+              @click="
+                toggleUserRole({ userId: user.id, isAdmin: user.isAdmin })
+              "
             >
-              set as admin
-            </button>
-            <button
-              type="button"
-              class="btn btn-link"
-              v-show="user.id !== currentUser.id"
-              v-else
-              @click.stop.prevent="toggleUserRole(user.id)"
-            >
-              set as user
+              {{ user.isAdmin ? "set as user" : "set as admin" }}
             </button>
           </td>
         </tr>
@@ -45,51 +38,10 @@
 
 <script>
 import AdminNav from "./../components/AdminNav.vue";
-
-const dummyData = {
-  users: [
-    {
-      id: 1,
-      name: "root",
-      email: "root@example.com",
-      password: "$2a$10$OEpYPwy1SULoNCUJ9FAiXOzZhpCkXliy.4dUCZXLBsFPSlrWTIRT2",
-      isAdmin: true,
-      image: null,
-      createdAt: "2022-01-24T10:33:09.000Z",
-      updatedAt: "2022-01-24T10:33:09.000Z",
-    },
-    {
-      id: 2,
-      name: "user1",
-      email: "user1@example.com",
-      password: "$2a$10$kC7d3SpwVWNisG25ZhSJ1.wLBlW5kexc9q3Ryh4ak0rT1xAd8Omw6",
-      isAdmin: false,
-      image: null,
-      createdAt: "2022-01-24T10:33:09.000Z",
-      updatedAt: "2022-01-24T10:33:09.000Z",
-    },
-    {
-      id: 3,
-      name: "user2",
-      email: "user2@example.com",
-      password: "$2a$10$qhrZaoxt6F/u55QasF0QWuXV83u8wMRMkywz9UgVNi/t.K9rF/sGC",
-      isAdmin: false,
-      image: null,
-      createdAt: "2022-01-24T10:33:09.000Z",
-      updatedAt: "2022-01-24T10:33:09.000Z",
-    },
-  ],
-};
-const dummyUser = {
-  currentUser: {
-    id: 1,
-    name: "管理者",
-    email: "root@example.com",
-    image: "https://i.pravatar.cc/300",
-    isAdmin: true,
-  },
-  isAuthenticated: true,
-};
+import adminAPI from "./../apis/admin";
+import { Toast } from "./../utils/helpers";
+import { mapState } from "vuex";
+import admin from "./../apis/admin";
 
 export default {
   name: "AdminUsers",
@@ -97,43 +49,59 @@ export default {
     AdminNav,
   },
   created() {
-    this.fetchUser();
-    this.fetchCurrentUser();
+    this.fetchUsers();
+  },
+  computed: {
+    ...mapState(["currentUser"]),
   },
   data() {
     return {
       users: {},
-      currentUser: {
-        id: -1,
-        name: "",
-        email: "",
-        image: "",
-        isAdmin: false,
-      },
+
       isAuthenticated: false,
     };
   },
   methods: {
-    fetchUser() {
-      this.users = dummyData.users;
+    async fetchUsers() {
+      try {
+        const { data } = await adminAPI.users.get();
+        const { users } = data;
+        this.users = users;
+      } catch (error) {
+        console.log("error", error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得使用者資料，請稍後再試",
+        });
+      }
     },
-    fetchCurrentUser() {
-      this.currentUser = {
-        ...this.currentUser,
-        ...dummyUser.currentUser,
-      };
-      this.isAuthenticated = dummyUser.isAuthenticated;
-    },
-    toggleUserRole(userId) {
-      this.users = this.users.map((user) => {
-        if (user.id === userId) {
-          return {
-            ...user,
-            isAdmin: !user.isAdmin,
-          };
+    async toggleUserRole({ userId, isAdmin }) {
+      try {
+        const { data } = await admin.users.update({
+          userId,
+          isAdmin: (!isAdmin).toString(),
+        });
+
+        if (data.status === "error") {
+          throw new Error(data.message);
         }
-        return user;
-      });
+
+        this.users = this.users.map((user) => {
+          if (user.id === userId) {
+            return {
+              ...user,
+              isAdmin: !user.isAdmin,
+            };
+          }
+          return user;
+        });
+      } catch (error) {
+        console.log("error", error);
+        Toast.fire({
+          icon: "error",
+          title: "無法更新會員角色，請稍後再試",
+        });
+      }
     },
   },
 };

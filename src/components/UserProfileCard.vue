@@ -2,7 +2,7 @@
   <div class="card mb-3">
     <div class="row no-gutters">
       <div class="col-md-4">
-        <img :src="user.image" width="300px" height="300px" />
+        <img :src="user.image | emptyImage" width="300px" height="300px" />
       </div>
       <div class="col-md-8">
         <div class="card-body">
@@ -59,8 +59,13 @@
 </template>
 
 <script>
+import { emptyImageFilter } from "./../utils/mixins";
+import usersAPI from "./../apis/users";
+import { Toast } from "./../utils/helpers";
+
 export default {
   name: "userProfileCard",
+  mixins: [emptyImageFilter],
   props: {
     user: {
       type: Object,
@@ -75,19 +80,46 @@ export default {
       required: true,
     },
   },
+  watch: {
+    initialIsFollowed(isFollowed) {
+      this.isFollowed = isFollowed;
+    },
+  },
   data() {
     return {
       isFollowed: this.initialIsFollowed,
     };
   },
   methods: {
-    deleteFollowing(userId) {
-      console.log("delcurrentuser", userId);
-      this.isFollowed = false;
+    async deleteFollowing(userId) {
+      try {
+        const { data } = await usersAPI.deleteFollowing({ userId });
+        if (data.status === "error") {
+          throw new Error(data.message);
+        }
+        this.isFollowed = false;
+      } catch (error) {
+        console.log("error", error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取消追蹤，請稍後再試",
+        });
+      }
     },
-    addFollowing(userId) {
-      console.log("addcurrentuser", userId);
-      this.isFollowed = true;
+    async addFollowing(userId) {
+      try {
+        const { data } = await usersAPI.addFollowing({ userId });
+        if (data.status === "error") {
+          throw new Error(data.message);
+        }
+        this.isFollowed = true;
+      } catch (error) {
+        console.log("error", error);
+        Toast.fire({
+          icon: "error",
+          title: "無法加入追蹤，請稍後再試",
+        });
+      }
     },
   },
 };

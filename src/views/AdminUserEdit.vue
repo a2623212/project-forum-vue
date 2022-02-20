@@ -1,49 +1,86 @@
 <template>
   <div class="container py-5">
     <!-- AdminUserForm -->
-    <AdminUserForm :initial-user="user" @after-submit="handleAfterSubmit" />
+    <AdminUserForm
+      :initial-user="user"
+      @after-submit="handleAfterSubmit"
+      :is-processing="isProcessing"
+    />
   </div>
 </template>
 
 <script>
-const dummyData = {
-  profile: {
-    id: 1,
-    name: "root",
-    image: "https://i.imgur.com/58ImzMM.png",
-  },
-};
+import { mapState } from "vuex";
+import usersAPI from "./../apis/users";
 import AdminUserForm from "./../components/AdminUserForm";
+import { Toast } from "./../utils/helpers";
+
 export default {
   name: "AdminUserEdit",
   components: {
     AdminUserForm,
   },
+  watch: {
+    currentUser(user) {
+      console.log("user", user);
+      const { id } = this.$route.params;
+      this.setUser(id);
+    },
+  },
   created() {
     const { id } = this.$route.params;
-    this.fetchUser(id);
+    this.setUser(id);
+  },
+  beforeRouteUpdate(to, from, next) {
+    const { id } = to.params;
+    this.setUser(id);
+    next();
+  },
+  computed: {
+    ...mapState["currentUser"],
   },
   data() {
     return {
       user: {
-        id: -1,
-        name: "",
+        id: 0,
         image: "",
+        name: "",
+        email: "",
       },
+      isProcessing: false,
     };
   },
   methods: {
-    fetchUser(userId) {
-      console.log("user id:", userId);
-      this.user = {
-        id: dummyData.profile.id,
-        name: dummyData.profile.name,
-        image: dummyData.profile.image,
-      };
+    setUser(userId) {
+      const { id, image, name, email } = this.currentUser;
+
+      if (id.toString() !== userId.toString()) {
+        this.$router.push({ name: "not-found" });
+        return;
+      }
+      this.user.id = id;
+      this.user.name = name;
+      this.user.email = email;
+      this.user.image = image;
     },
-    handleAfterSubmit(formData) {
-      for (let [name, value] of formData.entries()) {
-        console.log(name + ": " + value);
+    async handleAfterSubmit(formData) {
+      try {
+        this.isProcessing = true;
+        const { data } = await usersAPI.update({
+          userId: this.user.id,
+          formData,
+        });
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        this.$router.push({ name: "user", params: { id: this.id } });
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法更新使用者資料，請稍後再試",
+        });
       }
     },
   },
