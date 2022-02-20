@@ -89,6 +89,10 @@ export default {
         }
         // 將 token 放到 localStorage
         localStorage.setItem("token", data.token);
+
+        //將資料傳到 vuex 中
+        this.$store.commit("setCurrentUser", data.user);
+
         // 成功登入後轉址到餐廳首頁
         this.$router.push("/restaurants");
         // 原本的.then end--
