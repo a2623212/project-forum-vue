@@ -33,11 +33,12 @@ export default {
   },
   beforeRouteUpdate(to, from, next) {
     const { id } = to.params;
+    console.log("beforeRouteUpdate", id);
     this.setUser(id);
     next();
   },
   computed: {
-    ...mapState["currentUser"],
+    ...mapState(["currentUser"]),
   },
   data() {
     return {
@@ -75,7 +76,12 @@ export default {
           throw new Error(data.message);
         }
 
-        this.$router.push({ name: "user", params: { id: this.id } });
+        Toast.fire({
+          icon: "success",
+          title: "成功更新使用者資料",
+        });
+
+        this.$router.push({ name: "user", params: { id: this.user.id } });
       } catch (error) {
         Toast.fire({
           icon: "error",
